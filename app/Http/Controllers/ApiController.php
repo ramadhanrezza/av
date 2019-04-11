@@ -15,6 +15,12 @@ class ApiController extends Controller
         $success = true;
 
         try {
+            $this->validate($request, [
+                'name' => 'required|string',
+                'email' => 'required|email|unique:users',
+                'password' => 'required|string|min:6|max:10'
+            ]);
+
             $user = new User();
             $user->name = $request->name;
             $user->email = $request->email;
@@ -31,10 +37,10 @@ class ApiController extends Controller
         }
 
         return response()->json([
-            'success'   => $this->success,
-            'message'   => $this->message,
-            'data'      => $this->data
-        ], $this->code);
+            'success'   => $success,
+            'message'   => $message,
+            'data'      => $data
+        ], $code);
     }
 
 
