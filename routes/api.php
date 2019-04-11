@@ -18,5 +18,7 @@ Route::post('register', 'ApiController@register');
 
 Route::group(['middleware' => 'auth.jwt'], function () {
     Route::get('logout', 'ApiController@logout');
-    
+
+    Route::get('user', 'UserController@index');
+    Route::get('user/{id}', 'UserController@show');
 });
