@@ -5,15 +5,15 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\User;
 Use Exception;
+use JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
 class ApiController extends Controller
 {
-    private $success;
-    private $data;
-    private $code;
-    private $message;
-
     public function register(Request $request) {
+        $code = 200;
+        $success = true;
+
         try {
             $user = new User();
             $user->name = $request->name;
@@ -21,15 +21,13 @@ class ApiController extends Controller
             $user->password = bcrypt($request->password);
             $user->save();
 
-            $this->code = 200;
-            $this->success = true;
-            $this->data = $user;
-            $this->message = 'Record completed.';
+            $data = $user;
+            $message = 'Record completed.';
         } catch (Exception $e) {
-            $this->code = 400;
-            $this->success = false;
-            $this->data = [];
-            $this->message = $e->getMessage();
+            $code = 400;
+            $success = false;
+            $data = [];
+            $message = $e->getMessage();
         }
 
         return response()->json([
@@ -41,6 +39,19 @@ class ApiController extends Controller
 
 
     public function login(Request $request) {
-        die('a');
+        $input = $request->only('email', 'password');
+        $jwt_token = null;
+
+        if (!$jwt_token = JWTAuth::attempt($input)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid Email or Password',
+            ], 401);
+        }
+
+        return response()->json([
+            'success' => true,
+            'token' => $jwt_token,
+        ]);
     }
 }
