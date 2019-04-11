@@ -95,12 +95,31 @@ class UserController extends Controller
         } else {
             return response()->json([
                 'success' => false,
-                'message' => 'Sorry, user could not be updated'
+                'message' => 'Sorry, user could not be updated.'
             ], 500);
         }
     }
 
-    public function destroy() {
+    public function destroy($id) {
+        $user = $this->user->find($id);
 
+        if (! $user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Sorry, User with id ' . $id . ' not found.'
+            ],400);
+        }
+
+        if ($user->delete()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Record deleted.'
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Sorry, user could not be deleted.'
+            ], 500);
+        }
     }
 }
